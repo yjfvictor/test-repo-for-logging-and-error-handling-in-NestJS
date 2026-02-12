@@ -18,6 +18,8 @@ import { AppModule } from "./app.module";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
 
 /**
+ * @function bootstrap
+ * @type function
  * @brief Bootstraps and starts the NestJS application.
  * @details Creates the Nest application with logging buffered, installs the
  *          Pino logger as the application logger, registers the global
@@ -30,15 +32,34 @@ async function bootstrap(): Promise<void> {
     bufferLogs: true,
   });
 
-  /** @type {Logger} Application-level Pino logger from nestjs-pino. */
+  /**
+   * @var logger
+   * @type Logger
+   * @brief Application-level Pino logger from nestjs-pino.
+   * @details Obtained from the module after creation; set as the application
+   *          logger via useLogger() so that all NestJS bootstrap and runtime
+   *          logs use Pino.
+   */
   const logger: Logger = app.get(Logger);
   app.useLogger(logger);
 
-  /** @type {HttpAdapterHost} Host providing the HTTP adapter for platform-agnostic responses. */
+  /**
+   * @var httpAdapterHost
+   * @type HttpAdapterHost
+   * @brief Host providing the HTTP adapter for platform-agnostic responses.
+   * @details Passed to AllExceptionsFilter so that the filter can send error
+   *          responses via the adapter (works with both Express and Fastify).
+   */
   const httpAdapterHost: HttpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
 
-  /** @type {number} Port on which the HTTP server will listen. */
+  /**
+   * @var port
+   * @type number
+   * @brief Port on which the HTTP server will listen.
+   * @details Read from the PORT environment variable if set; otherwise defaults
+   *          to 3000.
+   */
   const port: number = Number(process.env.PORT) || 3000;
   await app.listen(port);
 

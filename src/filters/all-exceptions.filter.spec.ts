@@ -20,35 +20,65 @@ import {
 
 describe("AllExceptionsFilter", () => {
   /**
+   * @var mockReply
+   * @type jest.Mock<void, [unknown, unknown, number]>
    * @brief Mock HTTP adapter with reply(response, body, statusCode).
+   * @details Jest mock used to assert that the filter calls the adapter's reply
+   *          with the expected response body and status code.
    */
   let mockReply: jest.Mock<void, [unknown, unknown, number]>;
 
   /**
+   * @var mockGetRequestUrl
+   * @type jest.Mock<string, [unknown]>
    * @brief Mock getRequestUrl to return a fixed path.
+   * @details Returns "/test-path" so that the filter's response body path field
+   *          can be asserted consistently.
    */
   let mockGetRequestUrl: jest.Mock<string, [unknown]>;
 
   /**
+   * @var mockResponse
+   * @type Record<string, unknown>
    * @brief Mock response object passed to reply().
+   * @details Empty object; the adapter's reply() is invoked with this as the
+   *          first argument in the filter under test.
    */
   let mockResponse: Record<string, unknown>;
 
   /**
+   * @var mockRequest
+   * @type Record<string, unknown>
    * @brief Mock request object (used for URL in adapter).
+   * @details Holds a url property; getRequestUrl() is called with this object
+   *          to obtain the path included in the error response body.
    */
   let mockRequest: Record<string, unknown>;
 
   /**
+   * @var mockHost
+   * @type ArgumentsHost
    * @brief ArgumentsHost mock that provides HTTP context.
+   * @details Provides switchToHttp() returning getRequest() and getResponse()
+   *          so that the filter can obtain the request and response passed to catch().
    */
   let mockHost: ArgumentsHost;
 
   /**
+   * @var filter
+   * @type AllExceptionsFilter
    * @brief Filter instance under test.
+   * @details Created in beforeEach with the mocked HttpAdapterHost; each test
+   *          invokes filter.catch() with an exception and mockHost.
    */
   let filter: AllExceptionsFilter;
 
+  /**
+   * @function beforeEach
+   * @type function
+   * @brief Sets up the mock reply, getRequestUrl, response, request, and host.
+   * @details Sets up the mock reply, getRequestUrl, response, request, and host.
+   */
   beforeEach(() => {
     mockReply = jest.fn();
     mockGetRequestUrl = jest.fn().mockReturnValue("/test-path");
@@ -72,7 +102,19 @@ describe("AllExceptionsFilter", () => {
     filter = new AllExceptionsFilter(httpAdapterHost);
   });
 
+  /**
+   * @function describe
+   * @type function
+   * @brief Tests for when catching HttpException.
+   * @details Tests that the filter sends the correct status and body with message from exception response.
+   */
   describe("when catching HttpException", () => {
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the filter sends the correct status and body with message from exception response.
+     * @details Tests that the filter sends the correct status and body with message from exception response.
+     */
     it("should send status and body with message from exception response", () => {
       const exception: HttpException = new HttpException(
         { message: "Validation failed" },
@@ -93,6 +135,12 @@ describe("AllExceptionsFilter", () => {
       expect(new Date(body.timestamp).toISOString()).toBe(body.timestamp);
     });
 
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the filter handles string response from HttpException.
+     * @details Tests that the filter handles string response from HttpException.
+     */
     it("should handle string response from HttpException", () => {
       const exception: HttpException = new HttpException(
         "Forbidden",
@@ -108,6 +156,12 @@ describe("AllExceptionsFilter", () => {
       expect(body.message).toBe("Forbidden");
     });
 
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the filter includes errorCode when present in response object.
+     * @details Tests that the filter includes errorCode when present in response object.
+     */
     it("should include errorCode when present in response object", () => {
       const exception: HttpException = new HttpException(
         { message: "Not found", errorCode: "RESOURCE_NOT_FOUND" },
@@ -123,6 +177,12 @@ describe("AllExceptionsFilter", () => {
       expect(body.message).toBe("Not found");
     });
 
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the filter handles array message in response.
+     * @details Tests that the filter handles array message in response.
+     */
     it("should handle array message in response", () => {
       const exception: HttpException = new HttpException(
         { message: ["Error one", "Error two"] },
@@ -138,7 +198,19 @@ describe("AllExceptionsFilter", () => {
     });
   });
 
+  /**
+   * @function describe
+   * @type function
+   * @brief Tests for when catching non-HTTP exception.
+   * @details Tests that the filter sends the correct status and body with generic message when NODE_ENV is production and with exception message when NODE_ENV is not production.
+   */
   describe("when catching non-HTTP exception", () => {
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the filter sends the correct status and body with generic message when NODE_ENV is production.
+     * @details Tests that the filter sends the correct status and body with generic message when NODE_ENV is production.
+     */
     it("should send 500 and generic message when NODE_ENV is production", () => {
       const originalEnv: string | undefined = process.env.NODE_ENV;
       process.env.NODE_ENV = "production";
@@ -156,6 +228,12 @@ describe("AllExceptionsFilter", () => {
       process.env.NODE_ENV = originalEnv;
     });
 
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the filter sends the correct status and body with exception message when NODE_ENV is not production.
+     * @details Tests that the filter sends the correct status and body with exception message when NODE_ENV is not production.
+     */
     it("should send 500 and exception message when NODE_ENV is not production", () => {
       const originalEnv: string | undefined = process.env.NODE_ENV;
       process.env.NODE_ENV = "development";
@@ -172,7 +250,19 @@ describe("AllExceptionsFilter", () => {
     });
   });
 
+  /**
+   * @function describe
+   * @type function
+   * @brief Tests for the ApiErrorResponseBody shape.
+   * @details Tests that the ApiErrorResponseBody always includes statusCode, timestamp, path, and message.
+   */
   describe("ApiErrorResponseBody shape", () => {
+    /**
+     * @function it
+     * @type function
+     * @brief Tests that the ApiErrorResponseBody always includes statusCode, timestamp, path, and message.
+     * @details Tests that the ApiErrorResponseBody always includes statusCode, timestamp, path, and message.
+     */
     it("should always include statusCode, timestamp, path, message", () => {
       const exception: HttpException = new HttpException(
         "Test",

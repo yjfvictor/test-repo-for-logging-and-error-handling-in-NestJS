@@ -14,6 +14,7 @@ import { Logger } from "@nestjs/common";
 import { AppService } from "./app.service";
 
 /**
+ * @class AppController
  * @brief Root HTTP controller.
  * @details Handles GET / for the welcome message and GET /error, GET /http-error
  *          for exception filter demonstration. Uses NestJS Logger (backed by
@@ -22,18 +23,24 @@ import { AppService } from "./app.service";
 @Controller()
 export class AppController {
   /**
+   * @var logger
+   * @type Logger
    * @brief NestJS Logger instance for this controller.
    * @details Context is set to AppController for log correlation.
    */
   private readonly logger: Logger = new Logger(AppController.name);
 
   /**
+   * @function constructor
    * @brief Constructs the controller with the application service.
+   * @details The service is used by getHello() to obtain the welcome message;
+   *          dependency injection allows the service to be mocked in tests.
    * @param appService Injected application service.
    */
   constructor(private readonly appService: AppService) {}
 
   /**
+   * @function getHello
    * @brief Handles GET / and returns the welcome message.
    * @details Logs an info message and delegates to AppService.getHello().
    * @returns The welcome string from the service.
@@ -45,6 +52,7 @@ export class AppController {
   }
 
   /**
+   * @function getError
    * @brief Handles GET /error and throws a generic Error.
    * @details Used to verify that the global exception filter catches
    *          non-HTTP exceptions and returns a formatted 500 response.
@@ -57,6 +65,7 @@ export class AppController {
   }
 
   /**
+   * @function getHttpError
    * @brief Handles GET /http-error and throws an HttpException.
    * @details Used to verify that the global exception filter formats
    *          HttpException (and subclasses) with a consistent JSON shape.
