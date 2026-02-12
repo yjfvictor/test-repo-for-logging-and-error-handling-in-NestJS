@@ -16,6 +16,7 @@ import { AppService } from "./app.service";
 import { pinoHttpOptions } from "./logger/logger.config";
 
 /**
+ * @class AppModule
  * @brief Root application module.
  * @details Registers the Pino logger module with HTTP-level options (level,
  *          pretty-print in non-production) and the single app controller

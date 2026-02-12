@@ -16,12 +16,19 @@ import { AppService } from "./app.service";
 
 describe("AppController", () => {
   /**
+   * @var appController
+   * @type AppController
    * @brief Controller instance under test.
+   * @details Resolved from the testing module after compilation in beforeEach.
    */
   let appController: AppController;
 
   /**
+   * @var mockAppService
+   * @type { getHello: jest.Mock<string, []> }
    * @brief Mock AppService with a getHello implementation.
+   * @details Injected in place of AppService; getHello returns the welcome
+   *          string so that the controller's getHello() can be asserted.
    */
   let mockAppService: { getHello: jest.Mock<string, []> };
 

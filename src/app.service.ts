@@ -13,18 +13,23 @@ import { Injectable } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 
 /**
+ * @class AppService
  * @brief Application root service.
  * @details Exposes a single method getHello() that returns a welcome message.
  */
 @Injectable()
 export class AppService {
   /**
+   * @var logger
+   * @type Logger
    * @brief Logger instance for this service.
    * @details Context is AppService.name for log correlation.
    */
   private readonly logger: Logger = new Logger(AppService.name);
 
   /**
+   * @function getHello
+   * @type function
    * @brief Returns a welcome message.
    * @details Algorithm: return a fixed string. No side effects. Logging
    *          can be added here if needed for debugging or auditing.

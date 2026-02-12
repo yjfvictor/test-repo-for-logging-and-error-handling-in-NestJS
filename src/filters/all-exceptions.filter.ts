@@ -31,7 +31,8 @@ import { Request } from "express";
  */
 export interface ApiErrorResponseBody {
   /**
-   * @var number statusCode
+   * @var statusCode
+   * @type number
    * @brief HTTP status code returned to the client.
    * @details Standard HTTP status value (e.g. 400, 404, 500). Indicates the
    *          outcome of the request from the server's perspective.
@@ -39,7 +40,8 @@ export interface ApiErrorResponseBody {
   statusCode: number;
 
   /**
-   * @var string timestamp
+   * @var timestamp
+   * @type string
    * @brief ISO 8601 timestamp at which the error was handled.
    * @details Date and time in ISO 8601 format (e.g. UTC) at which the exception
    *          filter produced the response. Used for auditing and correlation.
@@ -47,7 +49,8 @@ export interface ApiErrorResponseBody {
   timestamp: string;
 
   /**
-   * @var string path
+   * @var path
+   * @type string
    * @brief Request URL path that led to the error.
    * @details The path component of the request URL (e.g. /users/123) so that
    *          clients may identify which endpoint failed.
@@ -55,7 +58,8 @@ export interface ApiErrorResponseBody {
   path: string;
 
   /**
-   * @var string message
+   * @var message
+   * @type string
    * @brief Human-readable error message.
    * @details A short description of the error suitable for display to users or
    *          for logging. For HttpException this is taken from the response
@@ -64,7 +68,8 @@ export interface ApiErrorResponseBody {
   message: string;
 
   /**
-   * @var string errorCode
+   * @var errorCode
+   * @type string
    * @brief Optional error code for programmatic handling.
    * @details When present, a stable code (e.g. VALIDATION_ERROR) that clients
    *          may use to branch logic. Omitted when not provided by the exception.
@@ -73,6 +78,8 @@ export interface ApiErrorResponseBody {
 }
 
 /**
+ * @class AllExceptionsFilter
+ * @type class
  * @brief Global exception filter that formats all exceptions as a consistent API error response.
  * @details Implements ExceptionFilter with @Catch() so that it catches every exception.
  *          Uses HttpAdapterHost to get the underlying HTTP adapter and send the response
@@ -84,17 +91,28 @@ export interface ApiErrorResponseBody {
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   /**
+   * @var logger
+   * @type Logger
    * @brief NestJS Logger for logging caught exceptions.
+   * @details Used to log each caught exception at error level with message and
+   *          stack trace (or string representation) for debugging and monitoring.
    */
   private readonly logger: Logger = new Logger(AllExceptionsFilter.name);
 
   /**
+   * @function constructor
+   * @type function
    * @brief Constructs the filter with the HTTP adapter host.
+   * @details The host is used in catch() to obtain the underlying HTTP adapter
+   *          so that the response may be sent in a platform-agnostic way (Express
+   *          or Fastify).
    * @param httpAdapterHost Injected host that provides the HTTP adapter.
    */
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   /**
+   * @function catch
+   * @type function
    * @brief Handles the exception and sends a formatted JSON response.
    * @details 1) Resolves the HTTP adapter from the host. 2) Switches the
    *          arguments host to HTTP to get request and response. 3) Computes
